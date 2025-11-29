@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Rèn luyện Sinh viên</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 70px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 260px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { margin: 5px 0; }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+            border-left: 3px solid #667eea;
+            color: #667eea;
+        }
+        .menu-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 70px;
+            padding: 30px;
+            min-height: calc(100vh - 70px);
+        }
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .breadcrumb { color: #666; font-size: 14px; }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .card-icon.blue { background: #E3F2FD; color: #2196F3; }
+        .card-icon.purple { background: #F3E5F5; color: #9C27B0; }
+        .card-icon.green { background: #E8F5E9; color: #4CAF50; }
+        .card-icon.orange { background: #FFF3E0; color: #FF9800; }
+        .card-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+        .card-label { color: #666; font-size: 14px; }
+        .card-footer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* Score Card */
+        .score-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .score-header h2 { font-size: 20px; color: #333; }
+        .score-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .badge-excellent { background: #C8E6C9; color: #2E7D32; }
+        .badge-good { background: #BBDEFB; color: #1565C0; }
+        .badge-average { background: #FFF9C4; color: #F57F17; }
+        .score-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .score-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .score-item h4 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .score-item .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .score-item .max-score {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* Activity List */
+        .activity-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section-header h2 { font-size: 20px; color: #333; }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .activity-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+        }
+        .activity-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .activity-table tr:hover { background: #f8f9fa; }
+        .activity-name { font-weight: 600; color: #333; }
+        .activity-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .type-volunteer { background: #E8F5E9; color: #2E7D32; }
+        .type-cultural { background: #F3E5F5; color: #6A1B9A; }
+        .type-sports { background: #FFF3E0; color: #E65100; }
+        .type-social { background: #E3F2FD; color: #1565C0; }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-registered { background: #BBDEFB; color: #1565C0; }
+        .status-attended { background: #C8E6C9; color: #2E7D32; }
+        .status-missed { background: #FFCDD2; color: #C62828; }
+        .btn-action {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-action:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .nav-menu { display: none; }
+        }
+    </style>
+</head>
+<body>
+<!-- Header -->
+<div class="header">
+    <div class="header-content">
+        <div class="logo">
+            <div class="logo-icon">🎓</div>
+            <span>Hệ thống Quản lý Rèn luyện</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#dashboard">Tổng quan</a></li>
+            <li><a href="#activities">Hoạt động</a></li>
+            <li><a href="#scoring">Chấm điểm</a></li>
+            <li><a href="#reports">Báo cáo</a></li>
+        </ul>
+        <div class="user-info">
+            <div>
+                <div style="font-weight: 600;" th:text="${username}">Nguyễn Văn A</div>
+                <div style="font-size: 12px; opacity: 0.8;">
+                    MSSV: <span th:text="${studentCode}">20210001</span>
+                </div>
+            </div>
+            <div class="user-avatar" th:text="${#strings.substring(username,0,1)}">A</div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <ul class="sidebar-menu">
+        <li><a href="#dashboard" class="active">
+            <span class="menu-icon">📊</span>
+            <span>Tổng quan</span>
+        </a></li>
+        <li><a href="#myScore">
+            <span class="menu-icon">⭐</span>
+            <span>Điểm của tôi</span>
+        </a></li>
+        <li><a href="#activities">
+            <span class="menu-icon">📅</span>
+            <span>Hoạt động</span>
+        </a></li>
+        <li><a href="#selfScore">
+            <span class="menu-icon">📝</span>
+            <span>Tự chấm điểm</span>
+        </a></li>
+        <li><a href="#notifications">
+            <span class="menu-icon">🔔</span>
+            <span>Thông báo</span>
+        </a></li>
+        <li><a th:href="@{/logout}">
+            <span class="menu-icon">🚪</span>
+            <span>Đăng xuất</span>
+        </a></li>
+    </ul>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="dashboard">
+    <div class="page-header">
+        <h1>Tổng quan</h1>
+        <div class="breadcrumb">Trang chủ / Dashboard</div>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="dashboard-cards">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon blue">📊</div>
+            </div>
+            <div class="card-value" th:text="${currentScore}">85/100</div>
+            <div class="card-label">Điểm Rèn luyện HK1</div>
+            <div class="card-footer">
+                <span style="color: #4CAF50;">Xếp loại: <span th:text="${currentRank}">Giỏi</span></span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon purple">📅</div>
+            </div>
+            <div class="card-value" th:text="${activitiesCount}">12</div>
+            <div class="card-label">Hoạt động đã tham gia</div>
+            <div class="card-footer">
+                <span th:text="${upcomingActivities}">3 hoạt động sắp diễn ra</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon green">✅</div>
+            </div>
+            <div class="card-value" th:text="${attendanceRate}">95%</div>
+            <div class="card-label">Tỉ lệ tham gia</div>
+            <div class="card-footer">
+                <span th:text="${attendanceSummary}">11/12 hoạt động có mặt</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon orange">🏆</div>
+            </div>
+            <div class="card-value" th:text="${classRank}">#8</div>
+            <div class="card-label">Xếp hạng lớp</div>
+            <div class="card-footer">
+                <span th:text="${classRankSummary}">Top 20% sinh viên lớp</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score Card -->
+    <div class="score-card" id="myScore">
+        <div class="score-header">
+            <h2 th:text="${semesterTitle}">Chi tiết điểm rèn luyện - Học kỳ 1 (2024-2025)</h2>
+            <span class="score-badge badge-good" th:text="${currentRank}">Giỏi - 85 điểm</span>
+        </div>
+        <div class="score-details">
+            <!-- Ở đây demo dùng cứng, sau này bạn loop từ criteria -->
+            <div class="score-item">
+                <h4>1. Ý thức học tập</h4>
+                <span class="score">18</span>
+                <span class="max-score">/20</span>
+            </div>
+            <div class="score-item">
+                <h4>2. Chấp hành nội quy</h4>
+                <span class="score">23</span>
+                <span class="max-score">/25</span>
+            </div>
+            <div class="score-item">
+                <h4>3. Hoạt động VH-VN-TT</h4>
+                <span class="score">17</span>
+                <span class="max-score">/20</span>
+            </div>
+            <div class="score-item">
+                <h4>4. Phẩm chất công dân</h4>
+                <span class="score">20</span>
+                <span class="max-score">/25</span>
+            </div>
+            <div class="score-item">
+                <h4>5. Công tác cán bộ</h4>
+                <span class="score">7</span>
+                <span class="max-score">/10</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity List -->
+    <div class="activity-section" id="activities">
+        <div class="section-header">
+            <h2>Hoạt động gần đây</h2>
+            <a href="#" class="btn btn-primary">
+                <span>➕</span>
+                <span>Đăng ký hoạt động</span>
+            </a>
+        </div>
+        <table class="activity-table">
+            <thead>
+            <tr>
+                <th>Tên hoạt động</th>
+                <th>Loại</th>
+                <th>Thời gian</th>
+                <th>Điểm</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Sau này dùng th:each hoạt động từ DB, giờ để demo -->
+            <tr>
+                <td class="activity-name">Tình nguyện Mùa hè xanh 2024</td>
+                <td><span class="activity-type type-volunteer">Tình nguyện</span></td>
+                <td>15/08/2024</td>
+                <td><strong>+5</strong></td>
+                <td><span class="status status-attended">Đã tham gia</span></td>
+                <td><button class="btn-action">Chi tiết</button></td>
+            </tr>
+            <tr>
+                <td class="activity-name">Hội thao sinh viên 2024</td>
+                <td><span class="activity-type type-sports">Thể thao</span></td>
+                <td>20/09/2024</td>
+                <td><strong>+3</strong></td>
+                <td><span class="status status-attended">Đã tham gia</span></td>
+                <td><button class="btn-action">Chi tiết</button></td>
+            </tr>
+            <tr>
+                <td class="activity-name">Sinh hoạt chuyên đề lớp</td>
+                <td><span class="activity-type type-social">Xã hội</span></td>
+                <td>25/09/2024</td>
+                <td><strong>+2</strong></td>
+                <td><span class="status status-attended">Đã tham gia</span></td>
+                <td><button class="btn-action">Chi tiết</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

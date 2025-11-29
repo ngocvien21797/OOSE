@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập - Rèn luyện SV</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f7fa; }
+        .login-container {
+            width: 360px;
+            margin: 80px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; margin-bottom: 20px; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover { opacity: 0.9; }
+        .msg { color: red; margin-bottom: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>Đăng nhập hệ thống</h2>
+
+    <div th:if="${errorMessage}" class="msg" th:text="${errorMessage}"></div>
+
+    <!-- action /login (POST) đúng như AuthController -->
+    <form th:action="@{/login}" method="post">
+        <label>Mã sinh viên </label>
+        <input type="text" name="username" required>
+
+        <label>Mật khẩu</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Đăng nhập</button>
+    </form>
+</div>
+</body>
+</html>
