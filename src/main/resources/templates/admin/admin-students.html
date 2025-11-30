@@ -2,180 +2,323 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý sinh viên lớp - Admin</title>
+    <title>Quản lý sinh viên - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS layout chung -->
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            padding: 30px;
+            background-color: #f5f7fb;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
-
-        h1 { margin-bottom: 20px; color: #333; }
-
-        .filter-box {
-            background: #fff;
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .page-wrapper {
+            padding: 10px 0 30px 0;
         }
-
-        .filter-box input,
-        .filter-box select {
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            min-width: 200px;
-            font-size: 14px;
+        .page-title {
+            font-weight: 600;
+            font-size: 1.5rem;
         }
-
-        .filter-box button {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 6px;
-            background: #667eea;
-            color: white;
-            cursor: pointer;
-        }
-
-        .filter-box a {
-            font-size: 13px;
-            color: #666;
-            text-decoration: none;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        th {
-            background: #f0f2f5;
-            padding: 12px;
-            text-align: left;
-            font-size: 14px;
-            color: #555;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-            color: #333;
-        }
-
-        tr:last-child td { border-bottom: none; }
-
-        .status-tag {
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-block;
-        }
-        .st-1 { background: #e8f5e9; color: #2e7d32; }
-        .st-0 { background: #ffebee; color: #c62828; }
-        .st-2 { background: #fff3e0; color: #ef6c00; }
-
-        .actions a,
-        .actions button {
-            font-size: 13px;
-            padding: 6px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            color: white;
-        }
-        .btn-edit { background: #0288d1; }
-        .btn-del { background: #d32f2f; }
-
-        .no-data {
-            text-align: center;
-            padding: 15px;
-            color: #777;
+        .badge-status-active   { background-color: #28a745; }
+        .badge-status-inactive { background-color: #6c757d; }
+        .badge-status-reserved { background-color: #ffc107; color:#000; }
+        .student-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%; object-fit: cover;
         }
     </style>
 </head>
 <body>
 
-<h1>Danh sách sinh viên lớp</h1>
+    <!-- HEADER -->
+    <div th:replace="~{fragments/header :: header}"></div>
 
-<form class="filter-box" th:action="@{/admin/students}" method="get">
-    <input type="text"
-           name="keyword"
-           placeholder="Tìm MSSV / họ tên..."
-           th:value="${keyword}"/>
+    <!-- SIDEBAR -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-    <select name="status">
-        <!-- CHỖ NÀY ĐÃ SỬA: dùng value="" thường, KHÔNG dùng th:value="" -->
-        <option value="" th:selected="${status == null}">Tất cả trạng thái</option>
-        <option th:value="1" th:selected="${status == 1}">Đang học</option>
-        <option th:value="0" th:selected="${status == 0}">Nghỉ</option>
-        <option th:value="2" th:selected="${status == 2}">Bảo lưu</option>
-    </select>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="container-fluid page-wrapper">
 
-    <button type="submit">Lọc</button>
-    <a th:href="@{/admin/students}">Xóa lọc</a>
-</form>
+            <!-- TIÊU ĐỀ + BUTTON -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="page-title">Quản lý sinh viên</h3>
 
-<table>
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>MSSV</th>
-        <th>Họ và tên</th>
-        <th>Khoá</th>
-        <th>Email</th>
-        <th>Trạng thái</th>
-        <th>Hành động</th>
-    </tr>
-    </thead>
+                <!-- DÙNG MODAL CHUNG CHO THÊM/SỬA -->
+                <button type="button"
+                        class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#studentModal"
+                        onclick="openCreateStudentModal()">
+                    + Thêm sinh viên
+                </button>
+            </div>
 
-    <tbody>
+            <!-- FORM FILTER / SEARCH -->
+            <form class="card mb-4" method="get" th:action="@{/admin/students}">
+                <div class="card-body row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Từ khóa (MSSV / Họ tên)</label>
+                        <input type="text"
+                               name="keyword"
+                               class="form-control"
+                               placeholder="Nhập MSSV hoặc họ tên..."
+                               th:value="${keyword}">
+                    </div>
 
-    <tr th:if="${students == null or #lists.isEmpty(students)}">
-        <td colspan="7" class="no-data">Không có sinh viên nào phù hợp.</td>
-    </tr>
+                    <div class="col-md-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select name="statusFilter" class="form-select">
+                            <option value="">-- Tất cả --</option>
+                            <option value="1" th:selected="${statusFilter != null and statusFilter == 1}">
+                                Đang học
+                            </option>
+                            <option value="0" th:selected="${statusFilter != null and statusFilter == 0}">
+                                Nghỉ
+                            </option>
+                            <option value="2" th:selected="${statusFilter != null and statusFilter == 2}">
+                                Bảo lưu
+                            </option>
+                        </select>
+                    </div>
 
-    <tr th:each="stu, i : ${students}">
-        <td th:text="${i.index + 1}"></td>
-        <td th:text="${stu.mssv}"></td>
-        <td th:text="${stu.fullName}"></td>
-        <td th:text="${stu.courseYear}"></td>
-        <td th:text="${stu.email}"></td>
+                    <div class="col-md-3">
+                        <label class="form-label">Lớp</label>
+                        <select name="classIdFilter" class="form-select">
+                            <option value="">-- Tất cả lớp --</option>
+                            <option th:each="c : ${classes}"
+                                    th:value="${c.classId}"
+                                    th:text="${c.className}"
+                                    th:selected="${classIdFilter != null and classIdFilter == c.classId}">
+                            </option>
+                        </select>
+                    </div>
 
-        <td>
-            <span th:class="'status-tag ' + (stu.status == 1 ? 'st-1' : (stu.status == 0 ? 'st-0' : 'st-2'))"
-                  th:text="${stu.status == 1 ? 'Đang học' : (stu.status == 0 ? 'Nghỉ' : 'Bảo lưu')}">
-            </span>
-        </td>
-
-        <td class="actions">
-            <!-- SỬA URL EDIT CHO CHUẨN -->
-            <a th:href="@{/admin/students/edit/{id}(id=${stu.studentId})}"
-               class="btn-edit">Sửa</a>
-
-            <!-- SỬA URL DELETE CHO CHUẨN -->
-            <form th:action="@{/admin/students/delete/{id}(id=${stu.studentId})}"
-                  method="post"
-                  style="display:inline-block"
-                  onsubmit="return confirm('Bạn chắc muốn xóa sinh viên này?');">
-                <button type="submit" class="btn-del">Xóa</button>
+                    <div class="col-md-2 d-grid">
+                        <button type="submit" class="btn btn-success">
+                            Lọc
+                        </button>
+                    </div>
+                </div>
             </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
+
+            <!-- BẢNG DANH SÁCH SINH VIÊN -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Avatar</th>
+                            <th>MSSV</th>
+                            <th>Họ tên</th>
+                            <th>Lớp</th>
+                            <th>Khóa</th>
+                            <th>Email</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th class="text-center">Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${students == null or #lists.isEmpty(students)}">
+                            <td colspan="10" class="text-center py-4 text-muted">
+                                Không có sinh viên nào phù hợp.
+                            </td>
+                        </tr>
+
+                        <tr th:each="s, iterStat : ${students}">
+                            <td th:text="${iterStat.index + 1}"></td>
+
+                            <td>
+                                <img th:if="${s.avatar != null}"
+                                     th:src="${s.avatar}"
+                                     alt="Avatar"
+                                     class="student-avatar">
+                                <span th:if="${s.avatar == null}" class="text-muted">
+                                    -
+                                </span>
+                            </td>
+
+                            <td th:text="${s.mssv}">45510xxxxx</td>
+                            <td th:text="${s.fullName}">Nguyễn Văn A</td>
+                            <td th:text="${s.classEntity != null ? s.classEntity.className : '-'}"></td>
+                            <td th:text="${s.courseYear}"></td>
+                            <td th:text="${s.email}"></td>
+
+                            <td>
+                                <span th:switch="${s.status}">
+                                    <span th:case="1" class="badge badge-status-active">Đang học</span>
+                                    <span th:case="0" class="badge badge-status-inactive">Nghỉ</span>
+                                    <span th:case="2" class="badge badge-status-reserved">Bảo lưu</span>
+                                    <span th:case="*" class="badge bg-secondary">Không rõ</span>
+                                </span>
+                            </td>
+
+                            <td th:text="${#temporals.format(s.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <!-- SỬA: MỞ MODAL VÀ FILL DATA -->
+                                    <button type="button"
+                                            class="btn btn-outline-primary btn-edit"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#studentModal"
+                                            th:data-id="${s.studentId}"
+                                            th:data-mssv="${s.mssv}"
+                                            th:data-fullname="${s.fullName}"
+                                            th:data-email="${s.email}"
+                                            th:data-courseyear="${s.courseYear}"
+                                            th:data-status="${s.status}"
+                                            th:data-classid="${s.classEntity != null ? s.classEntity.classId : ''}">
+                                        Sửa
+                                    </button>
+
+                                    <!-- XOÁ -->
+                                    <form th:action="@{'/admin/students/delete/' + ${s.studentId}}"
+                                          method="post" style="display:inline;">
+                                        <button type="submit"
+                                                class="btn btn-outline-danger"
+                                                onclick="return confirm('Xóa sinh viên này?');">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL THÊM / SỬA SINH VIÊN (DÙNG CHUNG) -->
+    <div class="modal fade" id="studentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <form th:action="@{/admin/students/save}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="studentModalTitle">Thêm sinh viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- ID ẩn để phân biệt THÊM / SỬA -->
+                        <input type="hidden" name="studentId" id="studentId">
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">MSSV</label>
+                                <input type="text" class="form-control" name="mssv" id="mssv" required>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label class="form-label">Họ tên</label>
+                                <input type="text" class="form-control" name="fullName" id="fullName" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" id="email">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Khóa</label>
+                                <input type="number" class="form-control" name="courseYear" id="courseYear">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Trạng thái</label>
+                                <select class="form-select" name="status" id="status">
+                                    <option value="1">Đang học</option>
+                                    <option value="0">Nghỉ</option>
+                                    <option value="2">Bảo lưu</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Lớp</label>
+                                <select class="form-select" name="classId" id="classId">
+                                    <option value="">-- Chọn lớp --</option>
+                                    <option th:each="c : ${classes}"
+                                            th:value="${c.classId}"
+                                            th:text="${c.className}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary" id="studentModalSubmitBtn">
+                            Lưu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Mở modal ở chế độ THÊM mới
+        function openCreateStudentModal() {
+            document.getElementById('studentModalTitle').innerText = 'Thêm sinh viên';
+            document.getElementById('studentModalSubmitBtn').innerText = 'Thêm mới';
+
+            document.getElementById('studentId').value = '';
+            document.getElementById('mssv').value = '';
+            document.getElementById('fullName').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('courseYear').value = '';
+            document.getElementById('status').value = '1';
+            document.getElementById('classId').value = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.btn-edit');
+
+            editButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const id = this.dataset.id;
+                    const mssv = this.dataset.mssv;
+                    const fullname = this.dataset.fullname;
+                    const email = this.dataset.email;
+                    const courseYear = this.dataset.courseyear;
+                    const status = this.dataset.status;
+                    const classId = this.dataset.classid;
+
+                    document.getElementById('studentModalTitle').innerText = 'Sửa thông tin sinh viên';
+                    document.getElementById('studentModalSubmitBtn').innerText = 'Lưu thay đổi';
+
+                    document.getElementById('studentId').value = id || '';
+                    document.getElementById('mssv').value = mssv || '';
+                    document.getElementById('fullName').value = fullname || '';
+                    document.getElementById('email').value = email || '';
+                    document.getElementById('courseYear').value = courseYear || '';
+                    document.getElementById('status').value = status || '1';
+
+                    const classSelect = document.getElementById('classId');
+                    if (classId) {
+                        classSelect.value = classId;
+                    } else {
+                        classSelect.value = '';
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>

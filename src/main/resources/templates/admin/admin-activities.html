@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý hoạt động - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box;}
+        body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa;}
+
+        .header {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: fixed; width: 100%; top: 0; z-index: 1000;}
+        .header-content {display:flex;justify-content:space-between;align-items:center;max-width:1400px;margin:0 auto;height:70px;}
+        .logo {display:flex;align-items:center;gap:15px;font-size:20px;font-weight:bold;}
+        .user-info {display:flex;align-items:center;gap:15px;}
+        .user-avatar {width:40px;height:40px;border-radius:50%;background:white;color:#667eea;
+            display:flex;align-items:center;justify-content:center;font-weight:bold;}
+
+        .sidebar {position:fixed;left:0;top:70px;width:260px;height:calc(100vh - 70px);background:white;
+            box-shadow:2px 0 10px rgba(0,0,0,0.05);padding:20px 0;overflow-y:auto;}
+        .sidebar-menu {list-style:none;}
+        .sidebar-menu li {margin:5px 0;}
+        .sidebar-menu a {display:flex;align-items:center;gap:12px;padding:12px 25px;color:#333;text-decoration:none;
+            transition:all 0.3s;}
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {background:linear-gradient(90deg,rgba(102,126,234,0.1) 0%,transparent 100%);
+            border-left:3px solid #667eea;color:#667eea;}
+        .menu-icon {width:20px;text-align:center;}
+
+        .main-content {margin-left:260px;margin-top:70px;padding:30px;min-height:calc(100vh - 70px);}
+        .page-header {margin-bottom:25px;}
+        .page-header h1 {font-size:26px;color:#333;margin-bottom:5px;}
+        .breadcrumb {color:#666;font-size:14px;}
+
+        .section {background:white;border-radius:12px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:25px;}
+        .section-header {display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+        .section-header h2 {font-size:20px;color:#333;}
+
+        .form-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+
+        label {font-size:14px;color:#444;margin-bottom:4px;display:block;}
+        input[type="text"],
+        input[type="number"],
+        input[type="datetime-local"],
+        select,
+        textarea {
+            width:100%;padding:8px 10px;border-radius:6px;border:1px solid #d0d7e2;font-size:14px;
+        }
+        textarea {min-height:70px;resize:vertical;}
+
+        .btn {display:inline-block;padding:8px 14px;border-radius:6px;border:none;cursor:pointer;font-size:14px;}
+        .btn-primary {background:#667eea;color:white;}
+        .btn-secondary {background:#e0e3f0;color:#333;}
+        .btn-danger {background:#e55353;color:white;}
+        .btn-sm {font-size:13px;padding:5px 10px;}
+
+        .table-wrapper {overflow-x:auto;margin-top:10px;}
+        table {width:100%;border-collapse:collapse;font-size:14px;}
+        th {background:#f8f9fa;padding:10px;text-align:left;color:#666;border-bottom:1px solid #e1e4ee;}
+        td {padding:10px;border-bottom:1px solid #eee;color:#333;vertical-align:top;}
+
+        .badge {display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;}
+        .badge-level-class {background:#e3f2fd;color:#1565c0;}
+        .badge-level-faculty {background:#f3e5f5;color:#6a1b9a;}
+        .badge-level-university {background:#e8f5e9;color:#2e7d32;}
+        .badge-level-province {background:#fff3e0;color:#ef6c00;}
+
+        .badge-status-draft {background:#eceff1;color:#546e7a;}
+        .badge-status-open {background:#e8f5e9;color:#2e7d32;}
+        .badge-status-closed {background:#ffebee;color:#c62828;}
+        .badge-status-done {background:#e3f2fd;color:#1565c0;}
+        .badge-status-cancelled {background:#fbe9e7;color:#bf360c;}
+
+        .actions {display:flex;gap:6px;}
+        .text-muted {color:#999;font-size:13px;}
+        footer {margin-top:20px;text-align:center;color:#777;font-size:13px;}
+    </style>
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+	</head>
+
+<body>
+
+	<!-- HEADER -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<!-- SIDEBAR -->
+	<div th:replace="fragments/sidebar :: sidebar"></div>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-content">
+        <div class="logo">
+            <span>Đánh Giá Xếp Loại Rèn Luyện - Lớp</span>
+        </div>
+
+        <div class="user-info">
+            <div><div style="font-size:12px;opacity:0.8;">Quyền: ADMIN</div></div>
+            <div class="user-avatar">AD</div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+    <div class="page-header">
+        <h1>Quản lý hoạt động lớp</h1>
+        <div class="breadcrumb">Trang chủ / Hoạt động lớp</div>
+    </div>
+
+    <!-- FORM THÊM / SỬA HOẠT ĐỘNG -->
+    <div class="section">
+        <div class="section-header">
+            <h2 th:text="${activityForm.activityId} != null ? 'Sửa hoạt động' : 'Thêm hoạt động mới'">Thêm hoạt động mới</h2>
+            <span class="text-muted">Các trường có dấu * là bắt buộc</span>
+        </div>
+
+        <form th:action="@{/admin/activities/save}" th:object="${activityForm}" method="post">
+            <input type="hidden" th:field="*{activityId}"/>
+
+            <div class="form-grid">
+                <div>
+                    <label>Tên hoạt động *</label>
+                    <input type="text" th:field="*{name}" required/>
+                </div>
+
+                <div>
+                    <label>Lớp *</label>
+                    <!-- dùng name="classId" để map với @RequestParam("classId") -->
+                    <select name="classId" required>
+                        <option value="">-- Chọn lớp --</option>
+                        <option th:each="c : ${classes}"
+                                th:value="${c.classId}"
+                                th:text="${c.className}"
+                                th:selected="${activityForm.classEntity != null and activityForm.classEntity.classId == c.classId}">
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Cấp hoạt động (level) *</label>
+                    <select th:field="*{level}" required>
+                        <option th:value="${T(com.example.conduct.entity.Activity.Level).CLASS}">Lớp</option>
+                        <option th:value="${T(com.example.conduct.entity.Activity.Level).FACULTY}">Khoa</option>
+                        <option th:value="${T(com.example.conduct.entity.Activity.Level).UNIVERSITY}">Trường</option>
+                        <option th:value="${T(com.example.conduct.entity.Activity.Level).PROVINCE}">Tỉnh / TP</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Số lượng tối đa (max_participants)</label>
+                    <input type="number" min="1" th:field="*{maxParticipants}"/>
+                </div>
+
+                <div>
+                    <label>Thời gian bắt đầu đăng ký</label>
+                    <input type="datetime-local" th:field="*{registrationStart}"/>
+                </div>
+
+                <div>
+                    <label>Thời gian kết thúc đăng ký</label>
+                    <input type="datetime-local" th:field="*{registrationEnd}"/>
+                </div>
+
+                <div>
+                    <label>Bắt đầu nộp minh chứng</label>
+                    <input type="datetime-local" th:field="*{submissionStart}"/>
+                </div>
+
+                <div>
+                    <label>Kết thúc nộp minh chứng</label>
+                    <input type="datetime-local" th:field="*{submissionEnd}"/>
+                </div>
+
+                <div>
+                    <label>Trạng thái *</label>
+                    <select th:field="*{status}">
+                        <option th:value="${T(com.example.conduct.entity.Activity.Status).DRAFT}">Nháp (DRAFT)</option>
+                        <option th:value="${T(com.example.conduct.entity.Activity.Status).OPEN}">Mở đăng ký (OPEN)</option>
+                        <option th:value="${T(com.example.conduct.entity.Activity.Status).CLOSED}">Đã đóng (CLOSED)</option>
+                        <option th:value="${T(com.example.conduct.entity.Activity.Status).DONE}">Hoàn thành (DONE)</option>
+                        <option th:value="${T(com.example.conduct.entity.Activity.Status).CANCELLED}">Hủy (CANCELLED)</option>
+                    </select>
+                </div>
+
+                <div style="grid-column: 1 / -1;">
+                    <label>Mô tả</label>
+                    <textarea th:field="*{description}" placeholder="Mô tả nội dung hoạt động, yêu cầu, ghi chú..."></textarea>
+                </div>
+            </div>
+
+            <div style="margin-top:16px;display:flex;gap:10px;">
+                <button type="submit" class="btn btn-primary">Lưu hoạt động</button>
+                <a th:href="@{/admin/activities}" class="btn btn-secondary">Làm mới form</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- DANH SÁCH HOẠT ĐỘNG -->
+    <div class="section">
+        <div class="section-header">
+            <h2>Danh sách hoạt động</h2>
+            <span class="text-muted" th:text="${#lists.size(activities)} + ' hoạt động'">0 hoạt động</span>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Tên hoạt động</th>
+                    <th>Lớp</th>
+                    <th>Cấp</th>
+                    <th>Đăng ký</th>
+                    <th>Trạng thái</th>
+                    <th>Người tạo</th>
+                    <th>Ngày tạo</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${activities == null or #lists.isEmpty(activities)}">
+                    <td colspan="9" class="text-muted" style="text-align:center;padding:18px;">
+                        Chưa có hoạt động nào.
+                    </td>
+                </tr>
+
+                <tr th:each="a, stat : ${activities}">
+                    <td th:text="${stat.index + 1}">1</td>
+                    <td th:text="${a.name}">Tên hoạt động</td>
+                    <td th:text="${a.classEntity != null ? a.classEntity.className : '-'}">Lớp</td>
+                    <td>
+                        <span th:switch="${a.level}">
+                            <span th:case="${T(com.example.conduct.entity.Activity.Level).CLASS}"
+                                  class="badge badge-level-class">Lớp</span>
+                            <span th:case="${T(com.example.conduct.entity.Activity.Level).FACULTY}"
+                                  class="badge badge-level-faculty">Khoa</span>
+                            <span th:case="${T(com.example.conduct.entity.Activity.Level).UNIVERSITY}"
+                                  class="badge badge-level-university">Trường</span>
+                            <span th:case="${T(com.example.conduct.entity.Activity.Level).PROVINCE}"
+                                  class="badge badge-level-province">Tỉnh/TP</span>
+                            <span th:case="*"
+                                  class="badge">Khác</span>
+                        </span>
+                    </td>
+                    <td>
+                        <div>
+                            <span class="text-muted" style="display:block;font-size:12px;">Từ:</span>
+                            <span th:text="${a.registrationStart != null ? #temporals.format(a.registrationStart, 'dd/MM/yyyy HH:mm') : '-'}"></span>
+                        </div>
+                        <div>
+                            <span class="text-muted" style="display:block;font-size:12px;">Đến:</span>
+                            <span th:text="${a.registrationEnd != null ? #temporals.format(a.registrationEnd, 'dd/MM/yyyy HH:mm') : '-'}"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <span th:switch="${a.status}">
+                            <span th:case="${T(com.example.conduct.entity.Activity.Status).DRAFT}"
+                                  class="badge badge-status-draft">DRAFT</span>
+                            <span th:case="${T(com.example.conduct.entity.Activity.Status).OPEN}"
+                                  class="badge badge-status-open">OPEN</span>
+                            <span th:case="${T(com.example.conduct.entity.Activity.Status).CLOSED}"
+                                  class="badge badge-status-closed">CLOSED</span>
+                            <span th:case="${T(com.example.conduct.entity.Activity.Status).DONE}"
+                                  class="badge badge-status-done">DONE</span>
+                            <span th:case="${T(com.example.conduct.entity.Activity.Status).CANCELLED}"
+                                  class="badge badge-status-cancelled">CANCELLED</span>
+                            <span th:case="*"
+                                  class="badge badge-status-draft">UNKNOWN</span>
+                        </span>
+                    </td>
+                    <td th:text="${a.createdBy != null ? a.createdBy.username : '-'}">admin</td>
+                    <td th:text="${a.createdAt != null ? #temporals.format(a.createdAt, 'dd/MM/yyyy HH:mm') : '-'}">01/12/2025</td>
+                    <td>
+                        <div class="actions">
+                            <a th:href="@{'/admin/activities/edit/' + ${a.activityId}}"
+                               class="btn btn-sm btn-primary">Sửa</a>
+
+                            <form th:action="@{'/admin/activities/delete/' + ${a.activityId}}"
+                                  method="post"
+                                  onsubmit="return confirm('Xóa hoạt động này?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>© 2025 Student Conduct Management - Admin Panel</footer>
+</div>
+
+</body>
+</html>

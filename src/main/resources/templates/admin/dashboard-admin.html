@@ -6,98 +6,160 @@
     <title>Admin - Hệ thống Quản Lý Xếp Loại Rèn luyện</title>
 
     <style>
-        /* === CSS Y NHƯ FILE GỐC CỦA BẠN === */
-        * {margin: 0; padding: 0; box-sizing: border-box;}
-        body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa;}
+        /* RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        .header {background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: fixed; width: 100%; top: 0; z-index: 1000;}
-        .header-content {display:flex;justify-content:space-between;align-items:center;max-width:1400px;margin:0 auto;height:70px;}
-        .logo {display:flex;align-items:center;gap:15px;font-size:20px;font-weight:bold;}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
 
-        .user-info {display:flex;align-items:center;gap:15px;}
-        .user-avatar {width:40px;height:40px;border-radius:50%;background:white;color:#667eea;
-            display:flex;align-items:center;justify-content:center;font-weight:bold;}
+        /* MAIN CONTENT (header cao ~70px, sidebar rộng 260px) */
+        .main-content {
+            margin-left: 260px;       /* chừa chỗ cho sidebar */
+            margin-top: 70px;         /* chừa chỗ cho header */
+            padding: 30px;
+            min-height: calc(100vh - 70px);
+        }
 
-        /* Sidebar */
-        .sidebar {position:fixed;left:0;top:70px;width:260px;height:calc(100vh - 70px);background:white;
-            box-shadow:2px 0 10px rgba(0,0,0,0.05);padding:20px 0;overflow-y:auto;}
-        .sidebar-menu {list-style:none;}
-        .sidebar-menu li {margin:5px 0;}
-        .sidebar-menu a {display:flex;align-items:center;gap:12px;padding:12px 25px;color:#333;text-decoration:none;
-            transition:all 0.3s;}
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {background:linear-gradient(90deg,rgba(102,126,234,0.1) 0%,transparent 100%);
-            border-left:3px solid #667eea;color:#667eea;}
-        .menu-icon {width:20px;text-align:center;}
+        .page-header {
+            margin-bottom: 30px;
+        }
 
-        /* Main */
-        .main-content {margin-left:260px;margin-top:70px;padding:30px;min-height:calc(100vh - 70px);}
-        .page-header {margin-bottom:30px;}
-        .page-header h1 {font-size:28px;color:#333;margin-bottom:5px;}
-        .breadcrumb {color:#666;font-size:14px;}
+        .page-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
 
-        /* Cards */
-        .dashboard-cards {display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:30px;}
-        .card {background:white;border-radius:12px;padding:25px;box-shadow:0 2px 8px rgba(0,0,0,0.08);
-            transition:transform 0.3s,box-shadow 0.3s;}
-        .card:hover {transform:translateY(-5px);box-shadow:0 5px 15px rgba(0,0,0,0.15);}
-        .card-icon.blue {background:#E3F2FD;color:#2196F3;}
-        .card-icon.green {background:#E8F5E9;color:#4CAF50;}
-        .card-icon.purple {background:#F3E5F5;color:#9C27B0;}
-        .card-icon.orange {background:#FFF3E0;color:#FF9800;}
-        .card-icon {width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+        }
 
-        .card-value {font-size:32px;font-weight:bold;color:#333;margin:10px 0;}
-        .card-label {color:#666;font-size:14px;}
+        /* CARDS */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-        /* Sections + Table */
-        .section {background:white;border-radius:12px;padding:25px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:35px;}
-        .section-header {display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-        .section-header h2 {font-size:20px;color:#333;}
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 22px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-        .table {width:100%;border-collapse:collapse;}
-        .table th {background:#f8f9fa;padding:12px;text-align:left;font-size:14px;color:#666;}
-        .table td {padding:14px;border-bottom:1px solid #eee;font-size:14px;}
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
 
-        footer {margin-top:40px;text-align:center;color:#777;font-size:13px;}
+        .card-icon.blue { background:#E3F2FD; color:#2196F3; }
+        .card-icon.green { background:#E8F5E9; color:#4CAF50; }
+        .card-icon.purple { background:#F3E5F5; color:#9C27B0; }
+        .card-icon.orange { background:#FFF3E0; color:#FF9800; }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.1;
+        }
+
+        .card-label {
+            font-size: 13px;
+            color: #777;
+        }
+
+        /* SECTION + TABLE */
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 22px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .section-actions a {
+            font-size: 13px;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .section-actions a:hover {
+            text-decoration: underline;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            padding: 10px 12px;
+            text-align: left;
+            color: #666;
+        }
+
+        .table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-muted {
+            color: #888;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #777;
+            font-size: 13px;
+        }
     </style>
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
 </head>
 
 <body>
-
+   
     <!-- HEADER -->
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">
-                <span>Đánh Giá Xếp Loại Rèn Luyện - Lớp</span>
-            </div>
-
-            <div class="user-info">
-                <div><div style="font-size:12px;opacity:0.8;">Quyền: ADMIN</div></div>
-                <div class="user-avatar">AD</div>
-            </div>
-        </div>
-    </div>
+    <div th:replace="fragments/header :: header"></div>
 
     <!-- SIDEBAR -->
-    <div class="sidebar">
-        <ul class="sidebar-menu">
-
-            <li><a th:href="@{/admin}" class="active"><span class="menu-icon">📊</span>Dashboard</a></li>
-            <li><a th:href="@{/admin/students}"><span class="menu-icon">🎓</span>Sinh viên lớp</a></li>
-            <li><a th:href="@{/admin/activities}"><span class="menu-icon">📅</span>Hoạt động lớp</a></li>
-            <li><a th:href="@{/admin/registrations}"><span class="menu-icon">🧾</span>Đăng ký tham gia</a></li>
-            <li><a th:href="@{/admin/attendance}"><span class="menu-icon">📸</span>Điểm danh</a></li>
-            <li><a th:href="@{/admin/evidences}"><span class="menu-icon">📂</span>Minh chứng hoạt động</a></li>
-            <li><a th:href="@{/admin/self-scores}"><span class="menu-icon">📝</span>Duyệt tự đánh giá</a></li>
-            <li><a th:href="@{/admin/final-scores}"><span class="menu-icon">🏆</span>Điểm cuối kỳ</a></li>
-            <li><a th:href="@{/admin/notifications}"><span class="menu-icon">🔔</span>Thông báo lớp</a></li>
-            <li><a th:href="@{/admin/settings}"><span class="menu-icon">⚙️</span>Cấu hình & kỳ hiện tại</a></li>
-            <li><a th:href="@{/admin/logs}"><span class="menu-icon">📜</span>Nhật ký thao tác</a></li>
-
-        </ul>
-    </div>
+    <div th:replace="fragments/sidebar :: sidebar"></div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
@@ -107,58 +169,86 @@
             <div class="breadcrumb">Trang chủ / Dashboard lớp</div>
         </div>
 
-        <!-- CARDS LIÊN KẾT DỮ LIỆU -->
+        <!-- CARDS -->
         <div class="dashboard-cards">
 
             <div class="card">
                 <div class="card-icon blue">👨‍🎓</div>
-                <div class="card-value" th:text="${totalActiveStudents}">0</div>
-                <div class="card-label">Sinh viên đang học trong lớp</div>
+                <div>
+                    <div class="card-value" th:text="${totalActiveStudents}">0</div>
+                    <div class="card-label">Sinh viên đang học trong lớp</div>
+                </div>
             </div>
 
             <div class="card">
                 <div class="card-icon purple">⏸️</div>
-                <div class="card-value" th:text="${inactiveOrSuspendedStudents}">0</div>
-                <div class="card-label">SV nghỉ / bảo lưu</div>
+                <div>
+                    <div class="card-value" th:text="${inactiveOrSuspendedStudents}">0</div>
+                    <div class="card-label">SV nghỉ / bảo lưu</div>
+                </div>
             </div>
 
             <div class="card">
                 <div class="card-icon green">📅</div>
-                <div class="card-value" th:text="${openClassActivities}">0</div>
-                <div class="card-label">Hoạt động lớp đang mở đăng ký</div>
+                <div>
+                    <div class="card-value" th:text="${openClassActivities}">0</div>
+                    <div class="card-label">Hoạt động lớp đang mở đăng ký</div>
+                </div>
             </div>
 
             <div class="card">
                 <div class="card-icon orange">📝</div>
-                <div class="card-value" th:text="${pendingSelfScores}">0</div>
-                <div class="card-label">Phiếu tự đánh giá chờ duyệt</div>
+                <div>
+                    <div class="card-value" th:text="${pendingSelfScores}">0</div>
+                    <div class="card-label">Phiếu tự đánh giá chờ duyệt</div>
+                </div>
             </div>
 
         </div>
 
-        <!-- Mấy bảng bên dưới giữ nguyên MOCK -->
+        <!-- HOẠT ĐỘNG LỚP ĐANG MỞ / SẮP DIỄN RA -->
         <div class="section">
             <div class="section-header">
                 <h2>Hoạt động lớp đang mở / sắp diễn ra</h2>
-                <div class="section-actions">Xem tất cả hoạt động »</div>
+                <div class="section-actions">
+                    <a th:href="@{/admin/activities}">Xem tất cả hoạt động »</a>
+                </div>
             </div>
             <table class="table">
                 <thead>
-                    <tr>
-                        <th>Tên hoạt động</th>
-                        <th>Thời gian đăng ký</th>
-                        <th>Trạng thái</th>
-                        <th>Số đăng ký</th>
-                    </tr>
+                <tr>
+                    <th>Tên hoạt động</th>
+                    <th>Thời gian đăng ký</th>
+                    <th>Trạng thái</th>
+                    <th>Số đăng ký</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr><td>Ngày chủ nhật xanh</td><td>01/12/2025 - 10/12/2025</td><td>OPEN</td><td>25</td></tr>
-                    <tr><td>Sinh hoạt lớp tháng 12</td><td>05/12/2025 - 12/12/2025</td><td>OPEN</td><td>38</td></tr>
-                    <tr><td>Vệ sinh lớp – tuần 3</td><td>08/12/2025 - 15/12/2025</td><td>DRAFT</td><td>0</td></tr>
+                <tr th:if="${upcomingActivities == null or #lists.isEmpty(upcomingActivities)}">
+                    <td colspan="4" class="text-muted" style="text-align:center;">
+                        Hiện chưa có hoạt động nào đang mở / sắp diễn ra.
+                    </td>
+                </tr>
+
+                <tr th:each="a : ${upcomingActivities}">
+                    <td th:text="${a.name}">Tên hoạt động</td>
+                    <td>
+                        <span th:text="${a.registrationStart != null ? #temporals.format(a.registrationStart, 'dd/MM/yyyy') : '—'}">
+                            01/12/2025
+                        </span>
+                        -
+                        <span th:text="${a.registrationEnd != null ? #temporals.format(a.registrationEnd, 'dd/MM/yyyy') : '—'}">
+                            10/12/2025
+                        </span>
+                    </td>
+                    <td th:text="${a.status}">OPEN</td>
+                    <td th:text="${a.registrations != null ? a.registrations.size() : 0}">0</td>
+                </tr>
                 </tbody>
             </table>
         </div>
 
+        <!-- MOCK phần dưới (sau này thích thì làm động tiếp) -->
         <div class="section">
             <div class="section-header">
                 <h2>Phiếu tự đánh giá chờ duyệt gần đây</h2>
@@ -172,8 +262,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <tr><td>4551050123</td><td>Nguyễn Văn A</td><td>Tham gia hoạt động lớp</td><td>15/20</td><td>PENDING</td><td>25/11/2025 20:15</td></tr>
-                    <tr><td>4551050456</td><td>Trần Thị B</td><td>Ý thức nội quy</td><td>18/20</td><td>PENDING</td><td>25/11/2025 19:30</td></tr>
+                <tr><td>4551050123</td><td>Nguyễn Văn A</td><td>Tham gia hoạt động lớp</td><td>15/20</td><td>PENDING</td><td>25/11/2025 20:15</td></tr>
+                <tr><td>4551050456</td><td>Trần Thị B</td><td>Ý thức nội quy</td><td>18/20</td><td>PENDING</td><td>25/11/2025 19:30</td></tr>
                 </tbody>
             </table>
         </div>
@@ -185,19 +275,20 @@
             </div>
             <table class="table">
                 <thead>
-                    <tr>
-                        <th>Hành động</th><th>Người thực hiện</th><th>Chi tiết</th><th>Thời gian</th>
-                    </tr>
+                <tr>
+                    <th>Hành động</th><th>Người thực hiện</th><th>Chi tiết</th><th>Thời gian</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr><td>approve_self_score</td><td>Lớp trưởng</td><td>Duyệt MSSV 4551050123</td><td>26/11/2025 19:50</td></tr>
-                    <tr><td>create_activity</td><td>Bí thư</td><td>Tạo hoạt động xanh</td><td>26/11/2025 18:10</td></tr>
-                    <tr><td>lock_final_score</td><td>Admin</td><td>Chốt HK1</td><td>25/11/2025 21:05</td></tr>
+                <tr><td>approve_self_score</td><td>Lớp trưởng</td><td>Duyệt MSSV 4551050123</td><td>26/11/2025 19:50</td></tr>
+                <tr><td>create_activity</td><td>Bí thư</td><td>Tạo hoạt động xanh</td><td>26/11/2025 18:10</td></tr>
+                <tr><td>lock_final_score</td><td>Admin</td><td>Chốt HK1</td><td>25/11/2025 21:05</td></tr>
                 </tbody>
             </table>
         </div>
 
         <footer>© 2025 Student Conduct Management - Admin Panel</footer>
+
     </div>
 </body>
 </html>

@@ -12,6 +12,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("""
            SELECT s FROM Student s
            WHERE (:status IS NULL OR s.status = :status)
+             AND (:classId IS NULL OR s.classEntity.classId = :classId)
              AND (
                   :keyword IS NULL
                   OR LOWER(s.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
@@ -19,7 +20,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
              )
            """)
     List<Student> searchStudents(@Param("keyword") String keyword,
-                                 @Param("status") Integer status);
+                                 @Param("status") Integer status,
+                                 @Param("classId") Long classId);
 
     long countByStatus(Integer status);
 }

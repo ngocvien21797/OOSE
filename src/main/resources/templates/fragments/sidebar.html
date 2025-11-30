@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+
+<body>
+<!-- SIDEBAR -->
+<div class="sidebar"
+     th:fragment="sidebar">
+
+    <ul class="sidebar-menu">
+        <li><a th:href="@{/admin/dashboard}" 
+               th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
+                <span class="menu-icon">📊</span>Dashboard
+        </a></li>
+
+        <li><a th:href="@{/admin/classes}"
+               th:classappend="${activePage == 'classes' ? 'active' : ''}">
+                <span class="menu-icon">🏫</span>Chọn lớp
+        </a></li>
+
+        <li><a th:href="@{/admin/students}"
+               th:classappend="${activePage == 'students' ? 'active' : ''}">
+                <span class="menu-icon">🎓</span>Sinh viên lớp
+        </a></li>
+
+        <li><a th:href="@{/admin/activities}"
+               th:classappend="${activePage == 'activities' ? 'active' : ''}">
+                <span class="menu-icon">📅</span>Hoạt động lớp
+        </a></li>
+
+        <li><a th:href="@{/admin/registrations}"
+               th:classappend="${activePage == 'registrations' ? 'active' : ''}">
+                <span class="menu-icon">🧾</span>Đăng ký tham gia
+        </a></li>
+
+        <li><a th:href="@{/admin/attendance}"
+               th:classappend="${activePage == 'attendance' ? 'active' : ''}">
+                <span class="menu-icon">📸</span>Điểm danh
+        </a></li>
+
+        <li><a th:href="@{/admin/evidences}"
+               th:classappend="${activePage == 'evidences' ? 'active' : ''}">
+                <span class="menu-icon">📂</span>Minh chứng
+        </a></li>
+
+        <li><a th:href="@{/admin/self-scores}"
+               th:classappend="${activePage == 'selfscores' ? 'active' : ''}">
+                <span class="menu-icon">📝</span>Duyệt tự đánh giá
+        </a></li>
+
+        <li><a th:href="@{/admin/final-scores}"
+               th:classappend="${activePage == 'finalscores' ? 'active' : ''}">
+                <span class="menu-icon">🏆</span>Điểm cuối kỳ
+        </a></li>
+
+        <li><a th:href="@{/admin/notifications}"
+               th:classappend="${activePage == 'notifications' ? 'active' : ''}">
+                <span class="menu-icon">🔔</span>Thông báo
+        </a></li>
+
+        <li><a th:href="@{/admin/settings}"
+               th:classappend="${activePage == 'settings' ? 'active' : ''}">
+                <span class="menu-icon">⚙️</span>Cấu hình
+        </a></li>
+
+        <li><a th:href="@{/admin/logs}"
+               th:classappend="${activePage == 'logs' ? 'active' : ''}">
+                <span class="menu-icon">📜</span>Nhật ký thao tác
+        </a></li>
+
+    </ul>
+</div>
+
+</body>
+</html>

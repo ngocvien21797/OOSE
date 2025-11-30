@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh mục lớp - Admin</title>
+
+    <style>
+        * {margin:0;padding:0;box-sizing:border-box;}
+        body {font-family:'Segoe UI', Tahoma; background:#f5f7fa;}
+
+        /* HEADER */
+        .header {
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            height:70px; color:white;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:0 30px; position:fixed; top:0; left:0; right:0;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1);
+            z-index:1000;
+        }
+
+        .logo {font-size:20px; font-weight:bold;}
+        .user-info {display:flex; align-items:center; gap:15px;}
+        .user-avatar {
+            width:40px;height:40px;border-radius:50%;
+            background:white;color:#667eea;font-weight:bold;
+            display:flex;align-items:center;justify-content:center;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width:260px; background:white; position:fixed;
+            top:70px; bottom:0; left:0;
+            padding-top:20px;
+            box-shadow:2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-menu {list-style:none;}
+        .sidebar-menu a {
+            text-decoration:none; color:#333;
+            display:flex; align-items:center; gap:12px;
+            padding:12px 25px; transition:0.2s;
+            border-left:3px solid transparent;
+        }
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background:rgba(102,126,234,0.1);
+            color:#667eea;
+            border-left-color:#667eea;
+        }
+
+        .menu-icon {width:20px;text-align:center;}
+
+        /* MAIN */
+        .main-content {
+            margin-left:260px;
+            margin-top:70px;
+            padding:30px;
+        }
+
+        .section {
+            background:white; border-radius:10px;
+            padding:20px; margin-bottom:25px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-group {margin-bottom:15px;}
+        label {font-weight:600;}
+        input {
+            width:100%; padding:10px; border-radius:6px;
+            border:1px solid #ccc; margin-top:5px;
+        }
+
+        .btn-save {
+            background:#667eea; color:white; padding:10px 18px;
+            border:none; border-radius:6px; cursor:pointer;
+        }
+
+        .btn-delete {
+            background:#e53935; color:white; padding:6px 12px;
+            border:none; border-radius:6px; cursor:pointer;
+        }
+
+        table {width:100%; border-collapse:collapse;}
+        th {
+            background:#f0f2f5; text-align:left;
+            padding:12px; font-weight:600;
+        }
+        td {
+            padding:12px; border-bottom:1px solid #eee;
+        }
+    </style>
+	<link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+
+<body>
+
+	<!-- HEADER -->
+	<div th:replace="fragments/header :: header"></div>
+
+	<!-- SIDEBAR -->
+	<div th:replace="fragments/sidebar :: sidebar"></div>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="logo">Danh mục lớp</div>
+    <div class="user-info">
+        <div style="font-size:12px;opacity:0.8;">Quyền: ADMIN</div>
+        <div class="user-avatar">AD</div>
+    </div>
+</div>
+
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+    <div class="section">
+        <h2>Thêm / sửa lớp</h2>
+        <form th:action="@{/admin/classes/save}" th:object="${classForm}" method="post">
+            <input type="hidden" th:field="*{classId}"/>
+
+            <div class="form-group">
+                <label>Tên lớp:</label>
+                <input th:field="*{className}" required/>
+            </div>
+
+            <div class="form-group">
+                <label>Khóa (course_year):</label>
+                <input type="number" th:field="*{courseYear}" required/>
+            </div>
+
+            <button class="btn-save">Lưu</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Danh sách lớp</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên lớp</th>
+                <th>Khóa</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="c : ${classes}">
+                <td th:text="${c.classId}"></td>
+                <td th:text="${c.className}"></td>
+                <td th:text="${c.courseYear}"></td>
+                <td>
+                    <a th:href="@{'/admin/classes/edit/' + ${c.classId}}">Sửa</a> |
+                    <form th:action="@{'/admin/classes/delete/' + ${c.classId}}" method="post" style="display:inline;">
+                        <button class="btn-delete" onclick="return confirm('Xóa lớp này?');">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

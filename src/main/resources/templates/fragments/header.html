@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+
+<body>
+<!-- HEADER -->
+<div class="header" th:fragment="header">
+
+    <div class="header-content">
+
+        <!-- Logo -->
+        <div class="logo">
+            <span>Đánh Giá Xếp Loại Rèn Luyện - Lớp</span>
+        </div>
+
+        <!-- User Info -->
+        <div class="user-info">
+
+            <div>
+                <div style="font-size:12px;opacity:0.8;">
+                    Quyền: <span th:text="${role}">ADMIN</span>
+                </div>
+                <div style="font-size:14px;" th:text="${username}">admin</div>
+            </div>
+
+            <!-- Avatar -->
+            <div class="user-avatar"
+                 th:text="${username != null ? #strings.toUpperCase(#strings.substring(username,0,2)) : 'AD'}">
+                AD
+            </div>
+
+            <!-- Logout Button -->
+            <form th:action="@{/logout}" method="post" style="margin-left: 15px;">
+                <button type="submit"
+                        style="
+                            background: #ff4d4f;
+                            border: none;
+                            padding: 8px 15px;
+                            border-radius: 6px;
+                            font-size: 14px;
+                            color: white;
+                            cursor: pointer;
+                            transition: 0.2s;
+                        "
+                        onmouseover="this.style.opacity='0.8'"
+                        onmouseout="this.style.opacity='1'">
+                    Đăng xuất
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
